@@ -68,3 +68,4 @@ public/swe-worker*
 *.patch
 *.pdf
 vercel.env
+lobe.env
