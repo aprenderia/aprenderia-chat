@@ -149,7 +149,7 @@ const Github: ModelProviderCard = {
     {
       description: 'Phi-3-mini模型的更新版。',
       displayName: 'Phi-3.5-mini 128K',
-      id: 'Phi-3-5-mini-instruct',
+      id: 'Phi-3.5-mini-instruct',
       maxOutput: 4096,
       tokens: 131_072,
     },
@@ -209,7 +209,7 @@ const Github: ModelProviderCard = {
   description: '通过GitHub模型，开发人员可以成为AI工程师，并使用行业领先的AI模型进行构建。',
   enabled: true,
   id: 'github',
-  modelList: { showModelFetcher: true },
+  // modelList: { showModelFetcher: true },
   name: 'GitHub',
   url: 'https://github.com/marketplace/models',
 };

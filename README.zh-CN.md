@@ -153,6 +153,7 @@ LobeChat 支持文件上传与知识库功能，你可以上传文件、图片�
 - **Minimax**: 接入了 Minimax 的 AI 模型，包括 MoE 模型 **abab6**，提供了更多的选择空间。[了解更多](https://www.minimaxi.com/)
 - **DeepSeek**: 接入了 DeepSeek 的 AI 模型，包括最新的 **DeepSeek-V2**，提供兼顾性能与价格的模型。[了解更多](https://www.deepseek.com/)
 - **Qwen**: 接入了 Qwen 的 AI 模型，包括最新的 **qwen-turbo**，**qwen-plus** 和 **qwen-max** 等模型。[了解更多](https://help.aliyun.com/zh/dashscope/developer-reference/model-introduction)
+- **Novita AI**: 性价比最高的开源模型供应商，支持 **Llama**，**Mistral** 系列等最前沿的开源模型。在情感陪伴等场景表现优异，无任何内容限制或审查。 [了解更多](https://novita.ai/model-api/product/llm-api?utm_source=lobechat&utm_medium=ch&utm_campaign=api)
 
 同时，我们也在计划支持更多的模型服务商，如 Replicate 和 Perplexity 等，以进一步丰富我们的服务商库。如果你希望让 LobeChat 支持你喜爱的服务商，欢迎加入我们的[社区讨论](https://github.com/lobehub/lobe-chat/discussions/1284)。
 
@@ -273,14 +274,14 @@ LobeChat 的插件生态系统是其核心功能的重要扩展，它极大地�
 
 <!-- AGENT LIST -->
 
-| 最近新增                                                                                                                                                               | 助手说明                                                                                                   |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| [拳击训练大师](https://chat-preview.lobehub.com/market?agent=boxing-master)<br/><sup>By **[Luyi-2333](https://github.com/Luyi-2333)** on **2024-10-15**</sup>          | 擅长拳击训练指导与个性化计划制定<br/>`拳击训练` `个性化计划` `健身指导` `进度评估` `技术提升` `健康与营养` |
-| [椰子](https://chat-preview.lobehub.com/market?agent=deep-thinker-ai)<br/><sup>By **[hia1234](https://github.com/hia1234)** on **2024-10-15**</sup>                    | 在自己的回答中进行多次审查，确保聊天机器人所说的话有依据，并积极请求反馈，反复进行互动<br/>`编程` `一般`   |
-| [GitHub 项目文档助手](https://chat-preview.lobehub.com/market?agent=github-doc-asst)<br/><sup>By **[Luyi-2333](https://github.com/Luyi-2333)** on **2024-10-14**</sup> | 专注开源项目文档编写与优化<br/>`文档优化` `开源项目` `撰写技巧` `git-hub`                                  |
-| [眼科医生](https://chat-preview.lobehub.com/market?agent=ophthalmologist)<br/><sup>By **[yuphone](https://github.com/yuphone)** on **2024-10-14**</sup>                | 擅长眼科诊断与治疗建议提供<br/>`医疗` `眼科` `诊断` `建议` `专业`                                          |
+| 最近新增                                                                                                                                                                                | 助手说明                                                                                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [Master E 的技术执行助理（EA）](https://chat-preview.lobehub.com/market?agent=alex)<br/><sup>By **[ApexAppdevelopment](https://github.com/ApexAppdevelopment)** on **2024-11-20**</sup> | 高度智能且忠诚的执行助理（EA），专注于为 Master E 提供软件工程支持和战略解决方案。<br/>`执行助理` `软件工程` `项目管理` `技术支持` `优化` |
+| [人类作者模拟器](https://chat-preview.lobehub.com/market?agent=human-writer-simulator)<br/><sup>By **[yufei96](https://github.com/yufei96)** on **2024-11-20**</sup>                    | 消除 AI 生成内容的特征<br/>`ai交互` `写作` `优化` `咨询`                                                                                  |
+| [智慧引导者](https://chat-preview.lobehub.com/market?agent=life-wisdom-guides)<br/><sup>By **[changjiong](https://github.com/changjiong)** on **2024-11-20**</sup>                      | 擅长引导<br/>`人生指导` `哲学思考` `咨询` `启发式对话`                                                                                    |
+| [Prompt 提示词](https://chat-preview.lobehub.com/market?agent=prompt-ts)<br/><sup>By **[qw1295353129](https://github.com/qw1295353129)** on **2024-11-20**</sup>                        | Prompt 提示词<br/>`prompt提示词`                                                                                                          |
 
-> 📊 Total agents: [<kbd>**418**</kbd> ](https://github.com/lobehub/lobe-chat-agents)
+> 📊 Total agents: [<kbd>**439**</kbd> ](https://github.com/lobehub/lobe-chat-agents)
 
  <!-- AGENT LIST -->
 

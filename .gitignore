@@ -69,3 +69,4 @@ public/swe-worker*
 *.pdf
 vercel.env
 lobe.env
+vertex-ai-key.json
