@@ -33,6 +33,7 @@ interface SessionWithAgent extends SessionItem {
 
 export class SessionModel {
   private userId: string;
+  private readonly DEFAULT_TITLE = 'Untitled Session';
 
   constructor(userId: string) {
     this.userId = userId;
@@ -189,14 +190,14 @@ export class SessionModel {
 
     const { agent, ...session } = result;
     const sessionId = this.genId();
-    const { id: _, slug: __, ...config } = agent;
+    const { id: _agentId, slug: _agentSlug, ...config } = agent;
 
     return this.create({
       config,
       id: sessionId,
       session: {
         ...session,
-        title: newTitle || session.title || '',
+        title: newTitle || session.title || this.DEFAULT_TITLE,
       },
       type: 'agent',
     });
@@ -251,7 +252,7 @@ export class SessionModel {
     ...res
   }: SessionWithAgent): LobeAgentSession => {
     const agent = agentsToSessions?.[0]?.agent;
-    const defaultTitle = 'Untitled Session';
+    const sessionTitle = agent?.title || title || this.DEFAULT_TITLE;
 
     return {
       ...res,
@@ -261,7 +262,7 @@ export class SessionModel {
         backgroundColor: agent?.backgroundColor || backgroundColor || undefined,
         description: agent?.description || description || undefined,
         tags: agent?.tags || undefined,
-        title: agent?.title || title || defaultTitle,
+        title: sessionTitle,
       },
       model: agent?.model || undefined,
     };
