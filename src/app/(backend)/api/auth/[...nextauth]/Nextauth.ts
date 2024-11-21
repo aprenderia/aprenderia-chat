@@ -1,18 +1,14 @@
 import NextAuth from "next-auth";
-import GoogleProvider from "@auth/google-provider";
+import GoogleProvider from "next-auth/providers/google";
+
+const clientId = process.env.GOOGLE_CLIENT_ID;
+const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+if (!clientId || !clientSecret) {
+  throw new Error("Missing Google OAuth credentials");
+}
 
 export default NextAuth({
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "select_account",
-        },
-      },
-    }),
-  ],
   callbacks: {
     async signIn({ account, profile }) {
       if (account?.provider === "google") {
@@ -21,4 +17,15 @@ export default NextAuth({
       return false;
     },
   },
+  providers: [
+    GoogleProvider({
+      authorization: {
+        params: {
+          prompt: "select_account",
+        },
+      },
+      clientId,
+      clientSecret,
+    }),
+  ],
 });

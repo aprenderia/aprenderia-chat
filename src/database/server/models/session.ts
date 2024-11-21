@@ -1,25 +1,35 @@
-import { Column, asc, count, inArray, like, sql } from 'drizzle-orm';
+import type { Column } from 'drizzle-orm';
+import { asc, count, inArray, like, sql } from 'drizzle-orm';
 import { and, desc, eq, isNull, not, or } from 'drizzle-orm/expressions';
 
-import { appEnv } from '@/config/app';
 import { INBOX_SESSION_ID } from '@/const/session';
 import { DEFAULT_AGENT_CONFIG } from '@/const/settings';
 import { serverDB } from '@/database/server/core/db';
 import { parseAgentConfig } from '@/server/globalConfig/parseDefaultAgent';
-import { ChatSessionList, LobeAgentSession } from '@/types/session';
+import type { ChatSessionList, LobeAgentSession, LobeSessionGroups } from '@/types/session';
 import { merge } from '@/utils/merge';
 
-import {
+import type {
   AgentItem,
   NewAgent,
   NewSession,
   SessionItem,
+} from '../schemas/lobechat';
+import {
   agents,
   agentsToSessions,
   sessionGroups,
   sessions,
 } from '../schemas/lobechat';
 import { idGenerator } from '../utils/idGenerator';
+
+interface AgentToSession {
+  agent: AgentItem;
+}
+
+interface SessionWithAgent extends SessionItem {
+  agentsToSessions?: AgentToSession[];
+}
 
 export class SessionModel {
   private userId: string;
@@ -42,17 +52,15 @@ export class SessionModel {
   }
 
   async queryWithGroups(): Promise<ChatSessionList> {
-    // 查询所有会话
     const result = await this.query();
-
     const groups = await serverDB.query.sessionGroups.findMany({
       orderBy: [asc(sessionGroups.sort), desc(sessionGroups.createdAt)],
       where: eq(sessions.userId, this.userId),
     });
 
     return {
-      sessionGroups: groups as unknown as ChatSessionList['sessionGroups'],
-      sessions: result.map((item) => this.mapSessionItem(item as any)),
+      sessionGroups: (groups as unknown as LobeSessionGroups),
+      sessions: result.map((item) => this.mapSessionItem(item as unknown as SessionWithAgent)),
     };
   }
 
@@ -60,10 +68,8 @@ export class SessionModel {
     if (!keyword) return [];
 
     const keywordLowerCase = keyword.toLowerCase();
-
     const data = await this.findSessionsByKeywords({ keyword: keywordLowerCase });
-
-    return data.map((item) => this.mapSessionItem(item as any));
+    return data.map((item) => this.mapSessionItem(item as unknown as SessionWithAgent));
   }
 
   async findByIdOrSlug(
@@ -79,7 +85,15 @@ export class SessionModel {
 
     if (!result) return;
 
-    return { ...result, agent: (result?.agentsToSessions?.[0] as any)?.agent } as any;
+    const session = result as unknown as SessionWithAgent;
+    const agent = session.agentsToSessions?.[0]?.agent;
+
+    if (!agent) return undefined;
+
+    return {
+      ...session,
+      agent,
+    };
   }
 
   async count() {
@@ -149,7 +163,7 @@ export class SessionModel {
     });
     if (item) return;
 
-    const serverAgentConfig = parseAgentConfig(appEnv.DEFAULT_AGENT_CONFIG) || {};
+    const serverAgentConfig = parseAgentConfig(process.env.DEFAULT_AGENT_CONFIG || '') || {};
 
     return await this.create({
       config: merge(DEFAULT_AGENT_CONFIG, serverAgentConfig),
@@ -159,13 +173,11 @@ export class SessionModel {
   }
 
   async batchCreate(newSessions: NewSession[]) {
-    const sessionsToInsert = newSessions.map((s) => {
-      return {
-        ...s,
-        id: this.genId(),
-        userId: this.userId,
-      };
-    });
+    const sessionsToInsert = newSessions.map((s) => ({
+      ...s,
+      id: this.genId(),
+      userId: this.userId,
+    }));
 
     return serverDB.insert(sessions).values(sessionsToInsert);
   }
@@ -175,19 +187,16 @@ export class SessionModel {
 
     if (!result) return;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars,unused-imports/no-unused-vars
-    const { agent, clientId, ...session } = result;
+    const { agent, ...session } = result;
     const sessionId = this.genId();
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, slug: __, ...config } = agent;
 
     return this.create({
-      config: config,
+      config,
       id: sessionId,
       session: {
         ...session,
-        title: newTitle || session.title,
+        title: newTitle || session.title || '',
       },
       type: 'agent',
     });
@@ -195,18 +204,12 @@ export class SessionModel {
 
   // **************** Delete *************** //
 
-  /**
-   * Delete a session, also delete all messages and topics associated with it.
-   */
   async delete(id: string) {
     return serverDB
       .delete(sessions)
       .where(and(eq(sessions.id, id), eq(sessions.userId, this.userId)));
   }
 
-  /**
-   * Batch delete sessions, also delete all messages and topics associated with them.
-   */
   async batchDelete(ids: string[]) {
     return serverDB
       .delete(sessions)
@@ -216,6 +219,7 @@ export class SessionModel {
   async deleteAll() {
     return serverDB.delete(sessions).where(eq(sessions.userId, this.userId));
   }
+
   // **************** Update *************** //
 
   async update(id: string, data: Partial<SessionItem>) {
@@ -245,21 +249,22 @@ export class SessionModel {
     avatar,
     groupId,
     ...res
-  }: SessionItem & { agentsToSessions?: { agent: AgentItem }[] }): LobeAgentSession => {
-    // TODO: 未来这里需要更好的实现方案，目前只取第一个
+  }: SessionWithAgent): LobeAgentSession => {
     const agent = agentsToSessions?.[0]?.agent;
+    const defaultTitle = 'Untitled Session';
+
     return {
       ...res,
-      group: groupId,
+      group: groupId || undefined,
       meta: {
-        avatar: agent?.avatar ?? avatar ?? undefined,
-        backgroundColor: agent?.backgroundColor ?? backgroundColor ?? undefined,
-        description: agent?.description ?? description ?? undefined,
-        tags: agent?.tags ?? undefined,
-        title: agent?.title ?? title ?? undefined,
+        avatar: agent?.avatar || avatar || undefined,
+        backgroundColor: agent?.backgroundColor || backgroundColor || undefined,
+        description: agent?.description || description || undefined,
+        tags: agent?.tags || undefined,
+        title: agent?.title || title || defaultTitle,
       },
-      model: agent?.model,
-    } as any;
+      model: agent?.model || undefined,
+    };
   };
 
   async findSessions(params: {
@@ -293,7 +298,6 @@ export class SessionModel {
           : eq(sessions.userId, this.userId),
         group ? eq(sessions.groupId, group) : isNull(sessions.groupId),
       ),
-
       with: { agentsToSessions: { columns: {}, with: { agent: true } }, group: true },
     });
   }
@@ -324,10 +328,15 @@ export class SessionModel {
       ),
       with: { agentsToSessions: { columns: {}, with: { session: true } } },
     });
+
     try {
-      // @ts-expect-error
-      return results.map((item) => item.agentsToSessions[0].session);
-    } catch {}
-    return []
+      return results.map((item) => {
+        const agentToSession = item.agentsToSessions[0] as { session: SessionItem };
+        return agentToSession?.session;
+      }).filter((session): session is SessionItem => session !== undefined);
+    } catch (error) {
+      console.error('Error mapping session results:', error);
+      return [];
+    }
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import { PropsWithChildren, useEffect } from 'react';
+import type { PropsWithChildren } from 'react';
+import { useEffect } from 'react';
 import { initializeAnalytics } from '@/config/firebase';
 
 const FirebaseProvider = ({ children }: PropsWithChildren) => {
@@ -17,7 +18,7 @@ const FirebaseProvider = ({ children }: PropsWithChildren) => {
     init();
   }, []);
 
-  return <>{children}</>;
+  return children;
 };
 
 export default FirebaseProvider;
