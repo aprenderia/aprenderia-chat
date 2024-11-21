@@ -5,6 +5,7 @@ import { ReactNode } from 'react';
 import { isRtlLang } from 'rtl-detect';
 
 import Analytics from '@/components/Analytics';
+import ClerkProvider from '@/components/providers/ClerkProvider';
 import { DEFAULT_LANG, LOBE_LOCALE_COOKIE } from '@/const/locale';
 import PWAInstall from '@/features/PWAInstall';
 import AuthProvider from '@/layout/AuthProvider';
@@ -28,15 +29,17 @@ const RootLayout = async ({ children, modal }: RootLayoutProps) => {
   return (
     <html dir={direction} lang={lang?.value || DEFAULT_LANG} suppressHydrationWarning>
       <body>
-        <GlobalProvider>
-          <AuthProvider>
-            {children}
-            {!mobile && modal}
-          </AuthProvider>
-          <PWAInstall />
-        </GlobalProvider>
-        <Analytics />
-        {inVercel && <SpeedInsights />}
+        <ClerkProvider>
+          <GlobalProvider>
+            <AuthProvider>
+              {children}
+              {!mobile && modal}
+            </AuthProvider>
+            <PWAInstall />
+          </GlobalProvider>
+          <Analytics />
+          {inVercel && <SpeedInsights />}
+        </ClerkProvider>
       </body>
     </html>
   );
