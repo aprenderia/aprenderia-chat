@@ -190,7 +190,8 @@ export class SessionModel {
 
     const { agent, ...session } = result;
     const sessionId = this.genId();
-    const { id: _agentId, slug: _agentSlug, ...config } = agent;
+    // Use rest operator to exclude id and slug without creating variables
+    const { id: _, slug: __, ...config } = agent;
 
     return this.create({
       config,
@@ -256,7 +257,7 @@ export class SessionModel {
 
     return {
       ...res,
-      group: groupId || undefined,
+      group: groupId as string | undefined,
       meta: {
         avatar: agent?.avatar || avatar || undefined,
         backgroundColor: agent?.backgroundColor || backgroundColor || undefined,
